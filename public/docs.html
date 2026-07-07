@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The protocol, in seven rungs · NULLIUS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0b'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%2300ff9c' font-family='monospace'%3E%E2%88%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <canvas id="hexbg"></canvas>
+  <nav class="nav">
+    <a href="/" class="nav__brand"><span class="nav__mark">∅</span><span class="nav__name">NULLIUS</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="/surface.html">Surface</a>
+      <a class="nav__link" href="/substrate.html">Substrate</a>
+      <a class="nav__link" href="/verify.html">Verify</a>
+      <a class="nav__link nav__link--active" href="/docs.html">Docs</a>
+      <a class="nav__link" href="/explorer/">Explorer</a>
+      <a class="nav__link nav__cta" href="/playground/">Playground</a>
+    </div>
+  </nav>
+
+  <div class="docs">
+    <aside class="docs__side">
+      <div class="docs__heading">The seven rungs</div>
+      <a class="docs__link" href="#r1">1 · The turn</a>
+      <a class="docs__link" href="#r2">2 · Substances &amp; verbs</a>
+      <a class="docs__link" href="#r3">3 · Guards</a>
+      <a class="docs__link" href="#r4">4 · Receipts</a>
+      <a class="docs__link" href="#r5">5 · The light client</a>
+      <a class="docs__link" href="#r6">6 · Userspace</a>
+      <a class="docs__link" href="#r7">7 · The trust boundary</a>
+      <div class="docs__heading">Elsewhere</div>
+      <a class="docs__link" href="/glossary.html">Glossary</a>
+      <a class="docs__link" href="/build.html">Build</a>
+      <a class="docs__link" href="/playground/">Playground</a>
+    </aside>
+
+    <article class="docs__body">
+      <div class="crumb"><a href="/">∅ home</a> / the protocol</div>
+      <h1>The protocol,<br>in seven rungs</h1>
+      <p>One sentence unfolding outward: <em>a turn is the exercise of an attenuable, proof-carrying token over owned state, leaving a verifiable receipt.</em> Each rung expands one clause of it.</p>
+
+      <h2 id="r1">1 · The turn</h2>
+      <p>A <strong>turn</strong> is an atomic batch of actions signed by an actor. It is the only way state changes. It commits entirely or not at all: a forged credential, an overdraft, or a stale nonce on any leg voids the whole turn and leaves the state untouched.</p>
+      <div class="api"><span class="k">turn</span> = { actor: <span class="t">Ed25519Pub</span>, nonce: <span class="t">Hex</span>, actions: <span class="t">Action[]</span>, sig: <span class="t">Ed25519Sig</span> }</div>
+
+      <h2 id="r2">2 · The substances and the verbs</h2>
+      <p>State lives in <strong>cells</strong>: each holds balances, capability slots, named slots, and a predicate over its own transitions. The reference verbs are <code>transfer</code> (move value, conserving it) and <code>set_slot</code> (write a named slot). Each action presents a <strong>capability</strong> — a token naming what it may touch and how.</p>
+      <div class="callout callout--note">Capabilities are <em>attenuable but never amplifiable</em>. You can narrow rights and bolt on caveats with only the token in hand; you cannot widen them without the cell's root secret. This is the macaroon → biscuit lineage.</div>
+
+      <h2 id="r3">3 · Guards</h2>
+      <p>A <strong>guard</strong> is a condition the turn must discharge. Two do most of the work: the <em>authority guard</em> (<code>required ⊆ held</code>: the presented capability must actually grant the verb after its caveats narrow it) and the <em>predicate guard</em> (the target cell's program must accept the transition — a <code>solvent</code> cell refuses to go negative; a <code>budget</code> cell refuses to exceed its lifetime limit).</p>
+
+      <h2 id="r4">4 · Receipts</h2>
+      <p>A committed turn leaves <strong>Q</strong> — a receipt binding the entire post-state via a domain-tagged commitment, with no field a tamperer can edit. Receipts <strong>chain</strong>: each pins its parent by hash, so reorder, drop, or insert is detectable. The receipts <em>are</em> the history; scrubbing them backward is time travel, which is what the <a href="/explorer/">explorer</a> does.</p>
+      <div class="api"><span class="k">receipt</span> = { seq, prevHash, turnHash, stateRoot, actor, q = <span class="t">commit</span>(body) }</div>
+
+      <h2 id="r5">5 · The light client</h2>
+      <p>A stranger runs the smallest possible check and learns the truth about the whole history. <code>verifyHistory(receipts)</code> re-checks each commitment opens, each <code>prevHash</code> pins its parent, and the sequence is monotonic — <em>re-executing nothing and trusting no executor</em>. A server presenting a plausible state it never legitimately produced — <em>the pale ghost</em> — cannot pass, because there is no valid chain for a forged history.</p>
+
+      <h2 id="r6">6 · Userspace</h2>
+      <p>Above the kernel, apps are sets of cells exposing affordances rendered as surfaces (see <a href="/surface.html">Surface</a>). A line of credit is an attenuated capability; an encrypted group is a cell whose membership is physics; a game's fog of war is the membrane's per-viewer projection. Each is an SDK noun riding the same executor — no new kernel entry.</p>
+
+      <h2 id="r7">7 · The trust boundary</h2>
+      <p>What must you trust? The cryptographic floor (ed25519, HMAC, a collision-resistant commitment) and, in a full deployment, the Lean kernel's three axioms plus a real STARK on seL4. NULLIUS enforces rungs 1–5 in running code and represents the formal-methods and microkernel layers — stated plainly on the <a href="/verify.html">Verify page</a>. Trust is something you <em>check</em>, never something the page <em>claims</em>.</p>
+
+      <p class="mt7"><a class="btn btn--primary" href="/playground/">Drive rungs 1–5 in the playground <span class="btn__arrow">→</span></a></p>
+    </article>
+  </div>
+
+  <footer class="foot"><div class="foot__inner">
+    <div class="foot__top">
+      <div><div class="foot__brand"><span>∅</span> NULLIUS</div><p class="foot__tag">take nobody's word for it.</p></div>
+      <div class="foot__links"><a href="/">Home</a><a href="/glossary.html">Glossary</a><a href="/verify.html">Verify</a><a href="/playground/">Playground</a><a href="/explorer/">Explorer</a><a href="/build.html">Build</a></div>
+    </div>
+    <p class="foot__legal">∅ NULLIUS — verified object-capability substrate. AGPL-3.0-or-later.</p>
+  </div></footer>
+  <script type="module" src="/assets/fx.js"></script>
+</body>
+</html>

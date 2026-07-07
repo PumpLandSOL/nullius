@@ -1,0 +1,14 @@
+{
+  "name": "dregg",
+  "version": "0.1.0",
+  "description": "A verified agentic desktop — recreation. Cells, turns, receipts; real ed25519 + HMAC + hash-chained receipts.",
+  "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node kernel/selftest.mjs"
+  }
+}

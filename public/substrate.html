@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Substrate — local to global · NULLIUS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0b'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%2300ff9c' font-family='monospace'%3E%E2%88%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <canvas id="hexbg"></canvas>
+  <nav class="nav">
+    <a href="/" class="nav__brand"><span class="nav__mark">∅</span><span class="nav__name">NULLIUS</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="/surface.html">Surface</a>
+      <a class="nav__link nav__link--active" href="/substrate.html">Substrate</a>
+      <a class="nav__link" href="/verify.html">Verify</a>
+      <a class="nav__link" href="/docs.html">Docs</a>
+      <a class="nav__link" href="/explorer/">Explorer</a>
+      <a class="nav__link nav__cta" href="/playground/">Playground</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <div class="phead">
+      <span class="section__label">Layer 03 · Substrate</span>
+      <h1>One capability,<br>local to global</h1>
+      <p>An seL4 capability and a NULLIUS capability are the same abstraction at two points on a distance parameter <code>n</code>. The substrate is that gradation made real.</p>
+    </div>
+
+    <div class="callout callout--warn" style="margin-top:var(--s6)">A full deployment boots real Rust protection domains on the seL4 microkernel with an on-device STARK. NULLIUS reproduces the <em>capability model</em> and its <code>n=1</code> local collapse in running code; the seL4 boot and on-device prover are represented. See <a href="/verify.html">Verify</a>.</div>
+
+    <section class="section reveal">
+      <span class="section__label">The distance parameter</span>
+      <h2 class="section__title">n = 1 collapses to strong-local</h2>
+      <p class="section__intro">A local install is a first-class deployment with the strongest properties — immediate revocation, synchronous commit, consistent checkpoint — because at <code>n=1</code> the distributed bounds collapse to local ones. The moment a program reaches the network it flows into distributed mode with no seam: same handle, same <code>attenuate / delegate / invoke</code>, the bounds just relax along <code>n</code>.</p>
+      <div class="flow">
+        <div class="card card--accent"><span class="card__k">n = 1 · local</span><div class="card__h">Strongest bounds</div><p class="card__p">Synchronous commit, immediate revocation, one consistent checkpoint.</p></div>
+        <div class="card card--accent"><span class="card__k">n = few · cluster</span><div class="card__h">Relaxed bounds</div><p class="card__p">Quorum commit; revocation at finality; checkpoints coordinate.</p></div>
+        <div class="card card--accent"><span class="card__k">n → many · federation</span><div class="card__h">Same handle</div><p class="card__p">Asynchronous handoff, custody receipts, eventual finality after GST.</p></div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <span class="section__label">The topology</span>
+      <h2 class="section__title">The five-PD boot ladder</h2>
+      <p class="section__intro">On seL4 the stack comes up as a small set of protection domains, with ~10kLOC of verified C as the only privileged code. Everything else — including the executor — is unprivileged and capability-confined.</p>
+      <pre data-label="boot ladder"><code>seL4 microkernel        (verified C — the ONLY privileged code)
+   ├── PD: root-task     (hands out initial capabilities)
+   ├── PD: null-exec     (the executor — the one that runs turns)
+   ├── PD: prover        (STARK prove/verify, on device)
+   ├── PD: net           (strand-blocks, signatures, gossip)
+   └── PD: substrate     (holds apps, gives them caps, checkpoints)</code></pre>
+      <p class="section__intro" style="margin-top:var(--s5)"><strong>The executor is unprivileged.</strong> It has exactly the capabilities the root-task delegated and no ambient authority — the same discipline the surface above it lives under.</p>
+    </section>
+
+    <section class="section reveal">
+      <span class="section__label">Durable state</span>
+      <h2 class="section__title">pg-nullius — your node is your Postgres</h2>
+      <p class="section__intro">Reads are free SQL; writes are verified turns. The commit log projects into queryable tables — cells, receipts, caps — and a row's policy calls <code>null_admits(token,'read',id)</code>, the same decision the kernel makes, from the same capability token. Attenuation, offline delegation, time-boxing, revocation: the discipline row-level-security structurally cannot express, presented once per session.</p>
+      <p><a class="btn" href="/docs.html">Climb the protocol ladder <span class="btn__arrow">→</span></a></p>
+    </section>
+  </main>
+
+  <footer class="foot"><div class="foot__inner">
+    <div class="foot__top">
+      <div><div class="foot__brand"><span>∅</span> NULLIUS</div><p class="foot__tag">take nobody's word for it.</p></div>
+      <div class="foot__links"><a href="/">Home</a><a href="/surface.html">Surface</a><a href="/verify.html">Verify</a><a href="/docs.html">Docs</a><a href="/playground/">Playground</a><a href="/explorer/">Explorer</a></div>
+    </div>
+    <p class="foot__legal">∅ NULLIUS — verified object-capability substrate. AGPL-3.0-or-later.</p>
+  </div></footer>
+  <script type="module" src="/assets/fx.js"></script>
+</body>
+</html>

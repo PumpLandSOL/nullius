@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Surface — the agentic desktop · NULLIUS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0b'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%2300ff9c' font-family='monospace'%3E%E2%88%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <canvas id="hexbg"></canvas>
+  <nav class="nav">
+    <a href="/" class="nav__brand"><span class="nav__mark">∅</span><span class="nav__name">NULLIUS</span></a>
+    <div class="nav__links">
+      <a class="nav__link nav__link--active" href="/surface.html">Surface</a>
+      <a class="nav__link" href="/substrate.html">Substrate</a>
+      <a class="nav__link" href="/verify.html">Verify</a>
+      <a class="nav__link" href="/docs.html">Docs</a>
+      <a class="nav__link" href="/explorer/">Explorer</a>
+      <a class="nav__link nav__cta" href="/playground/">Playground</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <div class="phead">
+      <span class="section__label">Layer 01 · Surface</span>
+      <h1>A window is<br>a capability</h1>
+      <p>The agentic userlayer. Everything a human or AI agent touches is a cap-confined surface over verified state. Progressive enhancement becomes progressive <em>attenuation</em>.</p>
+    </div>
+
+    <section class="section reveal">
+      <span class="section__label">The core inversion</span>
+      <h2 class="section__title">A surface is authority, not a session</h2>
+      <p class="section__intro">In a normal desktop, what an app may do is decided by ambient grants — a cookie, a logged-in session, trust-the-process. On the surface the window <em>is</em> the authority: a typed bundle of cap-gated affordances. An agent sees exactly the affordances its held capabilities authorize; an unauthorized action is refused in-band by the <code>required ⊆ held</code> gate.</p>
+      <div class="flow">
+        <div class="card"><div class="card__h">Windows-as-capabilities</div><p class="card__p">A window is a <code>Cap{ Surface(cell), rights }</code>. Hand it to an agent and you've handed it a budget it cannot exceed. Revoke the capability and the window goes dark — no callback, no cleanup race.</p></div>
+        <div class="card"><div class="card__h">Declarative affordances</div><p class="card__p">Surfaces are hypertext-driven. Each affordance names the turn it invokes and the capability it needs. The renderer shows only what your token authorizes — the cheat is <em>unrepresentable</em>, not merely blocked.</p></div>
+        <div class="card"><div class="card__h">Rehydratable snapshots</div><p class="card__p">A screenshot embeds a sturdyref behind a membrane. Reopen it and it re-attaches a per-viewer, attenuated live surface. Two people open "the same" image and rehydrate two different, confined views.</p></div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <span class="section__label">The forcing function</span>
+      <h2 class="section__title">Fog of war: you provably cannot peek</h2>
+      <p class="section__intro">The sharpest exemplar makes a game mechanic <em>into</em> a security property. Fog of war is the membrane's per-viewer projection. To see a side's tiles you must hold the capability; a player holding only its own secret cannot construct the enemy's vision.</p>
+      <div class="term" style="max-width:640px">
+        <div class="term__bar"><span class="term__dot term__dot--live"></span> render surface · your capabilities only</div>
+        <div class="term__body">
+          <div class="term__line"><span class="c"># your units — authorized</span></div>
+          <div class="term__line">unit[2,4] <span class="ok">VISIBLE</span>   unit[3,4] <span class="ok">VISIBLE</span></div>
+          <div class="term__line"><span class="c"># enemy tiles — no capability held</span></div>
+          <div class="term__line">tile[7,3] <span class="no">OCCLUDED</span>   tile[8,3] <span class="no">OCCLUDED</span></div>
+          <div class="term__line"><span class="p">&gt;</span> forge vision proof for enemy side</div>
+          <div class="term__line"><span class="no">✗ REFUSED</span> cannot construct — secret not held</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <span class="section__label">The crown</span>
+      <h2 class="section__title">The desktop adds no trust</h2>
+      <p class="section__intro">Everything above reduces to cells, turns and receipts. The surface is a rendering of capability-gated affordances over the kernel — it introduces no new privileged path. If the kernel refuses a turn, the surface cannot smuggle it through, because the surface has no authority the kernel does not grant it.</p>
+      <p><a class="btn" href="/substrate.html">Down to the ground: the substrate <span class="btn__arrow">→</span></a></p>
+    </section>
+  </main>
+
+  <footer class="foot"><div class="foot__inner">
+    <div class="foot__top">
+      <div><div class="foot__brand"><span>∅</span> NULLIUS</div><p class="foot__tag">take nobody's word for it.</p></div>
+      <div class="foot__links"><a href="/">Home</a><a href="/substrate.html">Substrate</a><a href="/verify.html">Verify</a><a href="/docs.html">Docs</a><a href="/playground/">Playground</a><a href="/explorer/">Explorer</a></div>
+    </div>
+    <p class="foot__legal">∅ NULLIUS — verified object-capability substrate. AGPL-3.0-or-later.</p>
+  </div></footer>
+  <script type="module" src="/assets/fx.js"></script>
+</body>
+</html>

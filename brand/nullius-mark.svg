@@ -1,0 +1,17 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="g" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect x="3" y="3" width="250" height="250" rx="54" fill="#0a0a0b"/>
+  <rect x="3" y="3" width="250" height="250" rx="54" fill="#00ff9c" fill-opacity="0.05" stroke="#00ff9c" stroke-opacity="0.35" stroke-width="2"/>
+  <!-- corner ticks -->
+  <path d="M40 24 H24 V40 M232 216 V232 H216" fill="none" stroke="#00ff9c" stroke-opacity="0.6" stroke-width="3"/>
+  <!-- the empty-set mark: ring + slash -->
+  <g filter="url(#g)" stroke="#00ff9c" stroke-width="18" fill="none" stroke-linecap="round">
+    <circle cx="128" cy="132" r="56"/>
+    <line x1="82" y1="182" x2="174" y2="82"/>
+  </g>
+</svg>

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NULLIUS — take nobody's word for it</title>
+  <meta name="description" content="NULLIUS is a verified capability substrate where a window is a capability. Take nobody's word for it — a light client cannot be fooled. $NULL on Solana.">
+  <link rel="canonical" href="https://nulliussol.xyz/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nulliussol.xyz/">
+  <meta property="og:site_name" content="NULLIUS">
+  <meta property="og:title" content="NULLIUS — take nobody's word for it">
+  <meta property="og:description" content="A desktop where a window is a capability. A light client cannot be fooled. $NULL on Solana.">
+  <meta property="og:image" content="https://nulliussol.xyz/brand/nullius-og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NULLIUS — take nobody's word for it">
+  <meta name="twitter:description" content="A desktop where a window is a capability. A light client cannot be fooled. $NULL on Solana.">
+  <meta name="twitter:image" content="https://nulliussol.xyz/brand/nullius-og.png">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0b'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%2300ff9c' font-family='monospace'%3E%E2%88%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <canvas id="hexbg"></canvas>
+
+  <nav class="nav">
+    <a href="/" class="nav__brand"><span class="nav__mark">∅</span><span class="nav__name">NULLIUS</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="/surface.html">Surface</a>
+      <a class="nav__link" href="/substrate.html">Substrate</a>
+      <a class="nav__link" href="/verify.html">Verify</a>
+      <a class="nav__link" href="/docs.html">Docs</a>
+      <a class="nav__link" href="/explorer/">Explorer</a>
+      <a class="nav__link nav__cta" href="/playground/">Playground</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero__inner">
+      <div class="stamp">Unfoolable<small>light-client verified</small></div>
+      <p class="eyebrow">Verified capability substrate · $NULL on Solana</p>
+      <h1><span data-decrypt>TAKE NOBODY'S WORD FOR IT.</span></h1>
+      <p class="hero__sub">
+        <strong>NULLIUS</strong> is a desktop where a window <em>is</em> a capability — an unforgeable,
+        attenuable reference that confers exactly the authority it names and nothing more. Hand an AI
+        agent a surface and you've handed it a budget it <strong>physically cannot exceed</strong>. Every
+        action is a signed, verified turn the system cannot lie about — and a light client checks the
+        whole history in one step. You don't trust the server. You <em>check</em> it.
+      </p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="/playground/">Try to break it <span class="btn__arrow">→</span></a>
+        <a class="btn" href="#kernel">How it works</a>
+        <a class="btn" href="/verify.html">What's proven</a>
+      </div>
+
+      <div class="term mt6" style="max-width:640px">
+        <div class="term__bar"><span class="term__dot term__dot--live"></span> nullius@devnet · light-client</div>
+        <div class="term__body">
+          <div class="term__line"><span class="p">&gt;</span> submit turn <span class="v">transfer 250 ∅ alice→bob</span></div>
+          <div class="term__line"><span class="ok">✓ COMMITTED</span> receipt #204 · root a2f0c7…</div>
+          <div class="term__line"><span class="p">&gt;</span> replay turn #204</div>
+          <div class="term__line"><span class="no">✗ REFUSED</span> freshness: nonce already spent</div>
+          <div class="term__line"><span class="p">&gt;</span> verify(chain) <span class="c"># re-executing nothing</span></div>
+          <div class="term__line"><span class="ok">✓ UNFOOLABLE</span> 204 receipts · trusts no executor</div>
+        </div>
+      </div>
+
+      <p class="hero__note">
+        The capability kernel is <strong>real</strong>: ed25519-signed turns, HMAC-attenuated capabilities,
+        hash-chained receipts a light client actually verifies. The playground runs that exact kernel in
+        your browser. The Lean proofs, STARK proving and seL4 boot of a full deployment are faithfully
+        <a href="/verify.html">represented, not reproduced</a> — and this site says which is which.
+      </p>
+    </div>
+  </header>
+
+  <main>
+
+  <section class="section wrap reveal">
+    <span class="section__label">The stack, in one breath</span>
+    <h2 class="section__title">Three layers. No new trust.</h2>
+    <p class="section__intro">Everything you touch reduces to a kernel whose every transition is checked. Authority is something you <em>show</em>, never something you <em>claim</em>.</p>
+    <div class="flow">
+      <div class="card card--accent"><span class="card__k">01 · Surface</span><div class="card__h">The agentic desktop</div><p class="card__p">Everything a human or AI agent touches: cap-confined surfaces, the web-of-cells, rehydratable snapshots. A window is a <code>Cap{ Surface(cell), rights }</code>. Progressive enhancement becomes progressive <em>attenuation</em>. <a href="/surface.html">Enter the surface →</a></p></div>
+      <div class="card card--accent"><span class="card__k">02 · Kernel</span><div class="card__h">The capability kernel</div><p class="card__p">The object-capability core. One sentence carries it: <em>a turn is the exercise of an attenuable, proof-carrying token over owned state, leaving a verifiable receipt.</em> The kernel this site describes is the executor the node runs — <a href="/playground/">the same file</a>, in your browser.</p></div>
+      <div class="card card--accent"><span class="card__k">03 · Substrate</span><div class="card__h">Local to global, on seL4</div><p class="card__p">One capability across a distance parameter. At <code>n=1</code> it collapses to strong-local: immediate revocation, synchronous commit. On the network it flows to distributed with no seam. <a href="/substrate.html">Read the substrate →</a></p></div>
+    </div>
+  </section>
+
+  <section class="section wrap reveal">
+    <span class="section__label">Why this is new</span>
+    <h2 class="section__title">Three things only this substrate can do</h2>
+    <p class="section__intro">Not features ported from elsewhere — categories that require an object-capability substrate with a verifiable history at once.</p>
+    <div class="grid grid-3">
+      <div class="card"><div class="card__h">A window is a capability</div><p class="card__p">A surface <em>is</em> the authority: a typed bundle of cap-gated affordances. An unauthorized action is refused in-band by the <code>required ⊆ held</code> gate, not by app good behaviour. Anti-cheat is free, because the cheat is <em>unrepresentable</em>.</p></div>
+      <div class="card"><div class="card__h">A screenshot you re-open, live</div><p class="card__p">A snapshot is a paused camera on a witnessed scene: it embeds a sturdyref behind a membrane. Two people open "the same" image and rehydrate two different, per-viewer, attenuated views. What you shared was never the pixels — it was <em>the revocable right to renegotiate</em>.</p></div>
+      <div class="card"><div class="card__h">One capability, local to global</div><p class="card__p">An seL4 capability and a NULLIUS capability are the same abstraction at two points on a distance parameter <code>n</code>. The bounds relax along <code>n</code> with no seam — same handle, same attenuate / delegate / invoke.</p></div>
+    </div>
+  </section>
+
+  <section class="section wrap reveal" id="kernel">
+    <span class="section__label">The kernel underneath</span>
+    <h2 class="section__title">Cells · turns · receipts</h2>
+    <p class="section__intro">Everything above rests on three objects. And on the visibility rule that makes privacy physics: <strong>you cannot read what you do not hold the capability for.</strong> Hover to reveal what your capability authorizes.</p>
+
+    <div class="term mt5" style="max-width:720px;margin-bottom:var(--s6)">
+      <div class="term__bar"><span class="term__dot term__dot--live"></span> GET /api/cell/cell:treasury · presenting your cap</div>
+      <div class="term__body">
+        <div class="term__line"><span class="c"># authorized field — hover to decrypt</span></div>
+        <div class="term__line">balance : <span class="rd">1,204,880 ∅</span>  owner : <span class="rd">7fA2…e91c</span></div>
+        <div class="term__line"><span class="c"># enemy vision — you hold no capability for this cell</span></div>
+        <div class="term__line">fog[7,3] : <span class="rd rd--lock">████████</span>   fog[8,3] : <span class="rd rd--lock">██████</span></div>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="card"><span class="card__k">01 / Cells</span><div class="card__h">State behind its own rules</div><p class="card__p">A cell holds balances, capabilities and named slots — plus a <em>predicate</em> over its own transitions the substrate enforces on every change. Nothing is ownerless. "A budget that cannot be exceeded" is just a cell whose predicate says so.</p></div>
+      <div class="card"><span class="card__k">02 / Turns</span><div class="card__h">Actions that show their warrant</div><p class="card__p">An atomic batch of actions, ed25519-signed by its actor. Each presents a capability — narrowable but never amplifiable — and discharges every guard in scope. The whole turn commits or none of it does. Lineage: macaroons → biscuit → the proof system.</p></div>
+      <div class="card"><span class="card__k">03 / Receipts</span><div class="card__h">History you hand a stranger</div><p class="card__p">A committed turn leaves <code>Q</code> — a receipt binding the entire post-state, with no field a tamperer can edit. Receipts chain by hash; a light client verifies a whole history by checking the chain, re-executing nothing and trusting no executor.</p></div>
+    </div>
+    <p class="mt5"><a class="btn" href="/docs.html">The protocol, in seven rungs <span class="btn__arrow">→</span></a></p>
+  </section>
+
+  <section class="section wrap reveal">
+    <span class="section__label">The assurance case</span>
+    <h2 class="section__title">A light client cannot be fooled</h2>
+    <p class="section__intro">Five properties a stranger learns by running the smallest possible check. The foil has a name — <em>the pale ghost</em>, a server presenting a state it never legitimately produced. It cannot pass.</p>
+    <div class="assure">
+      <div class="assure__row"><div class="assure__letter">A</div><div><div class="assure__name">Authority</div><p class="assure__stmt">Every state change is justified by an unforgeable, non-amplified, fresh token chain.</p><p class="assure__floor">floor: ed25519 (the signature on each handoff), HMAC (caveat-chain tags). <em>Enforced in this kernel — forge one in the playground.</em></p></div></div>
+      <div class="assure__row"><div class="assure__letter">B</div><div><div class="assure__name">Conservation</div><p class="assure__stmt">Per asset, the resource sum is identically zero — value only moves, never appears.</p><p class="assure__floor">floor: integer arithmetic. Mints are issuer moves from a well cell that goes negative, so Σ = 0 by construction. <em>Enforced.</em></p></div></div>
+      <div class="assure__row"><div class="assure__letter">C</div><div><div class="assure__name">Integrity</div><p class="assure__stmt">A receipt binds the whole post-state; a tampered field is rejected.</p><p class="assure__floor">floor: SHA-256 collision-resistance (standing in for Poseidon2). Edit any field and the commitment no longer opens. <em>The explorer flags it.</em></p></div></div>
+      <div class="assure__row"><div class="assure__letter">D</div><div><div class="assure__name">Freshness</div><p class="assure__stmt">No replay, no double-spend; a committed spend's nonce was fresh.</p><p class="assure__floor">floor: a per-actor nullifier set. Replay a spent turn and it is refused. <em>Enforced.</em></p></div></div>
+      <div class="assure__row"><div class="assure__letter">E</div><div><div class="assure__name">Unfoolability</div><p class="assure__stmt">A light client verifying a receipt chain learns A–D for the whole history; re-executing nothing.</p><p class="assure__floor">floor: hash-chain soundness (standing in for FRI/STARK recursion), ed25519. <em><code>verifyHistory()</code> runs client-side.</em></p></div></div>
+      <div class="assure__cap">5 guarantees · enforced in ONE executor that runs in both the node and your browser. The original pins each to a machine-checked <b>Lean</b> apex theorem; NULLIUS makes them true in running code and marks the formal layer honestly.</div>
+    </div>
+    <div class="seam"><strong>Honest seam.</strong> A full deployment machine-checks these in Lean and carries them through a real on-device STARK on seL4. Here they are enforced by real cryptographic code you can run and break, with the formal-verification and microkernel layers clearly marked as represented. Full delimitation on <a href="/verify.html">Verify</a>.</div>
+  </section>
+
+  <section class="section wrap reveal">
+    <span class="section__label">What it's good for</span>
+    <h2 class="section__title">Apps where the security property is the feature</h2>
+    <div class="flow">
+      <div class="card"><span class="card__k">Fog of war</span><div class="card__h">You provably cannot peek</div><p class="card__p">Fog of war <em>is</em> the membrane's per-viewer projection. To see a side's tiles you must hold the capability; a player holding only its own secret cannot construct the enemy's vision. Every move is a cap-gated verified turn.</p></div>
+      <div class="card"><span class="card__k">pg-nullius</span><div class="card__h">Your node is your Postgres</div><p class="card__p">Reads are free SQL; writes are verified turns. A row's policy calls <code>null_admits(token,'read',id)</code> — the same decision the kernel makes, from the same capability token. Attenuation and revocation that RLS structurally can't express.</p></div>
+      <div class="card"><span class="card__k">The organs</span><div class="card__h">Real systems, one path</div><p class="card__p">A line of credit is an attenuated capability (an over-line draw is refused). An encrypted group is one whose membership is physics. Each is an SDK noun on the <em>same</em> executor — no new kernel entry.</p></div>
+    </div>
+  </section>
+
+  <section class="section wrap reveal">
+    <div class="token">
+      <div class="token__tick">$NULL</div>
+      <p class="token__sub">The token of the NULLIUS substrate on Solana. <em>Take nobody's word for it</em> — including ours. The kernel is open and runs in your browser; verify before you believe.</p>
+      <div class="token__ca" data-copy="TBA — not yet launched"><span>CA</span> <b data-copy-label>not yet launched</b> <span style="color:var(--muted)">⧉ copy</span></div>
+    </div>
+  </section>
+
+  <section class="section wrap reveal">
+    <span class="section__label">Start here</span>
+    <h2 class="section__title">Touch it in five minutes</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <span class="card__k">01 · the node</span>
+        <div class="card__h">No install, just curl</div>
+        <p class="card__p" style="margin-bottom:var(--s4)">The devnet is the same node the repo builds. Ask what produces its state, then faucet a cell:</p>
+        <pre><code>curl -s nulliussol.xyz/status
+# → state_producer:"lean"
+
+curl -s -X POST nulliussol.xyz/api/faucet \
+  -d '{"recipient":"cell:me","amount":1000}'
+curl -s nulliussol.xyz/api/cell/cell:me</code></pre>
+      </div>
+      <div class="card">
+        <span class="card__k">02 · break a turn</span>
+        <div class="card__h">The rejection is the product</div>
+        <p class="card__p">The <a href="/playground/">playground</a> runs the real executor in your browser. Stage a transfer, then overdraw, replay, or forge a capability and watch the substrate refuse you — no server round-trip for the decision. Then open the <a href="/explorer/">explorer</a> and scrub any cell's history backward. Time travel is just reading receipts, because the receipts <em>are</em> the history.</p>
+        <p class="mt5"><a class="btn btn--primary" href="/playground/">Open playground <span class="btn__arrow">→</span></a></p>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="foot">
+    <div class="foot__inner">
+      <div class="foot__top">
+        <div>
+          <div class="foot__brand"><span>∅</span> NULLIUS</div>
+          <p class="foot__tag">take nobody's word for it. a light client cannot be fooled.</p>
+        </div>
+        <div class="foot__links">
+          <a href="/surface.html">Surface</a><a href="/substrate.html">Substrate</a><a href="/verify.html">Verify</a>
+          <a href="/docs.html">Docs</a><a href="/glossary.html">Glossary</a><a href="/paper.html">Paper</a>
+          <a href="/playground/">Playground</a><a href="/explorer/">Explorer</a><a href="/build.html">Build</a>
+        </div>
+      </div>
+      <p class="foot__legal">∅ NULLIUS — a verified distributed object-capability substrate. $NULL on Solana. AGPL-3.0-or-later. The kernel is real; the Lean / STARK / seL4 layers are represented, not reproduced — see Verify.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/assets/fx.js"></script>
+</body>
+</html>

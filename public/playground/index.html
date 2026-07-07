@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Playground — try to break it · NULLIUS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0b'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%2300ff9c' font-family='monospace'%3E%E2%88%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    .pg{max-width:1240px;margin:0 auto;padding:var(--s6) var(--s5) var(--s9)}
+    .pg-grid{display:grid;grid-template-columns:340px 1fr;gap:var(--s4);align-items:start}
+    @media (width<=920px){.pg-grid{grid-template-columns:1fr}}
+    .panel{background:var(--ink-2);border:1px solid var(--line);border-radius:var(--r3);padding:var(--s5);margin-bottom:var(--s4)}
+    .panel h3{font-family:var(--mono);font-size:.82rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:var(--s4);display:flex;align-items:center;gap:var(--s2);justify-content:space-between}
+    .cell{border:1px solid var(--line-2);border-left:2px solid var(--signal);border-radius:var(--r2);padding:var(--s3) var(--s4);margin-bottom:var(--s3);background:var(--void)}
+    .cell__id{font-family:var(--mono);color:var(--signal);font-size:.76rem;letter-spacing:.04em}
+    .cell__bal{font-family:var(--mono);color:var(--phosphor);font-size:1.15rem;margin-top:3px}
+    .cell__meta{font-family:var(--mono);color:var(--muted);font-size:.64rem;margin-top:5px;word-break:break-all}
+    label.f{display:block;font-family:var(--mono);font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:var(--s3) 0 var(--s1)}
+    select,input[type=number]{width:100%;background:var(--void);border:1px solid var(--line-2);color:var(--phosphor);border-radius:var(--r2);padding:9px 10px;font-family:var(--mono);font-size:.82rem}
+    select:focus,input:focus{outline:none;border-color:var(--signal-line)}
+    .fault{display:flex;gap:var(--s2);align-items:flex-start;padding:var(--s2) 0;font-size:.8rem;color:var(--dim);font-family:var(--sans);border-bottom:1px solid var(--line)}
+    .fault:last-of-type{border-bottom:none}
+    .fault input{margin-top:3px;accent-color:var(--signal)}
+    .run{width:100%;margin-top:var(--s4);justify-content:center}
+    .ev{border:1px solid var(--line-2);border-left:2px solid var(--muted);padding:var(--s3) var(--s4);margin-bottom:var(--s3);background:var(--void);border-radius:0 var(--r2) var(--r2) 0;font-family:var(--mono);font-size:.76rem}
+    .ev--ok{border-left-color:var(--signal)}
+    .ev--reject{border-left-color:var(--deny)}
+    .ev__head{color:var(--phosphor);margin-bottom:5px;letter-spacing:.02em}
+    .ev--ok .ev__head{color:var(--signal)}
+    .ev--reject .ev__head{color:var(--deny)}
+    .ev__body{color:var(--muted);white-space:pre-wrap;word-break:break-all;line-height:1.7}
+    .receipt{font-family:var(--mono);font-size:.7rem;color:var(--dim);border-bottom:1px solid var(--line);padding:var(--s2) 0;display:flex;gap:var(--s3);align-items:baseline}
+    .receipt__q{color:var(--signal)}
+    .hint{color:var(--dim);font-size:.9rem;font-family:var(--sans);margin-bottom:var(--s5);line-height:1.7;max-width:70ch}
+  </style>
+</head>
+<body>
+  <canvas id="hexbg"></canvas>
+  <nav class="nav">
+    <a href="/" class="nav__brand"><span class="nav__mark">∅</span><span class="nav__name">NULLIUS</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="/surface.html">Surface</a>
+      <a class="nav__link" href="/verify.html">Verify</a>
+      <a class="nav__link" href="/docs.html">Docs</a>
+      <a class="nav__link nav__link--active" href="/playground/">Playground</a>
+      <a class="nav__link" href="/explorer/">Explorer</a>
+    </div>
+  </nav>
+
+  <div class="pg">
+    <span class="section__label">The playground</span>
+    <h1 style="margin-bottom:var(--s4)">Try to break a turn</h1>
+    <p class="hint">
+      This page runs <a href="/kernel/executor.js"><code>kernel/executor.js</code></a> — the same executor
+      the node runs — right here, with real WebCrypto ed25519 and HMAC. Nothing is faked: stage a transfer
+      and it commits with a real receipt; try to overdraw, replay, or forge a capability and the kernel
+      refuses <em>in your browser</em>. <span class="chip chip--ok" id="cryptoBadge"><span class="chip__dot"></span>checking crypto…</span>
+    </p>
+
+    <div class="pg-grid">
+      <div>
+        <div class="panel">
+          <h3>Cells <span class="chip">∅ GRAIN</span></h3>
+          <div id="cells"></div>
+        </div>
+        <div class="panel">
+          <h3>Receipt chain</h3>
+          <div id="chain"></div>
+        </div>
+        <div class="panel">
+          <h3>Reset</h3>
+          <p class="hint" style="margin:0 0 var(--s3)">Regenerate keys, re-faucet, fresh history.</p>
+          <button class="btn" id="reset" style="width:100%;justify-content:center">Reset the world</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <h3>Stage a turn</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)">
+            <div><label class="f">from</label><select id="from"></select></div>
+            <div><label class="f">to</label><select id="to"></select></div>
+          </div>
+          <label class="f">amount</label>
+          <input type="number" id="amount" value="120" min="1">
+
+          <label class="f" style="margin-top:var(--s4)">inject a fault — watch the kernel refuse it</label>
+          <label class="fault"><input type="radio" name="fault" value="none" checked> <span>None — a valid, signed turn. It should <strong style="color:var(--signal)">commit</strong>.</span></label>
+          <label class="fault"><input type="radio" name="fault" value="overdraft"> <span>Overdraft — send more than the balance. Refused by the <code>solvent</code> predicate.</span></label>
+          <label class="fault"><input type="radio" name="fault" value="replay"> <span>Replay — reuse the previous nonce. Refused for <strong>freshness</strong> (double-spend).</span></label>
+          <label class="fault"><input type="radio" name="fault" value="forge"> <span>Forge — amplify a capability you don't hold. Refused for <strong>authority</strong>.</span></label>
+          <label class="fault"><input type="radio" name="fault" value="tamper"> <span>Tamper — edit a signed turn's amount after signing. Refused: <strong>bad signature</strong>.</span></label>
+          <label class="fault"><input type="radio" name="fault" value="capped"> <span>Over-caveat — transfer above a cap caveated to max 100. Refused: <strong>over-caveat-limit</strong>.</span></label>
+
+          <button class="btn btn--primary run" id="run">Sign &amp; execute turn →</button>
+        </div>
+
+        <div class="panel">
+          <h3>Event log <span class="chip chip--no">the rejection is the product</span></h3>
+          <div id="log"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { genesis, makeCell, applyTurn, faucet, signTurn, verifyHistory, ISSUER_WELL } from "/kernel/executor.js";
+    import { genKeypair, randomHex } from "/kernel/crypto.js";
+    import { issue, attenuate } from "/kernel/caps.js";
+
+    const $ = (id) => document.getElementById(id);
+    let world = null;
+
+    async function boot() {
+      try { await genKeypair(); $("cryptoBadge").innerHTML = '<span class="chip__dot"></span>ed25519 · hmac · sha-256 live'; }
+      catch { $("cryptoBadge").innerHTML = 'no WebCrypto Ed25519'; $("cryptoBadge").className = "chip chip--no"; }
+
+      const alice = await genKeypair(), bob = await genKeypair(), carol = await genKeypair();
+      const s = genesis(); const agents = {};
+      for (const [name, kp] of [["alice", alice], ["bob", bob], ["carol", carol]]) {
+        const secret = await randomHex(32); const cell = `cell:${name}`;
+        s.cells[cell] = makeCell(cell, { owner: kp.pub, rootSecret: secret, predicate: { kind: "solvent" } });
+        agents[name] = { name, ...kp, cell, secret };
+      }
+      let state = s;
+      for (const name of ["alice", "bob", "carol"]) {
+        const r = await faucet(state, { recipient: agents[name].cell, asset: "GRAIN", amount: 1000, producerPub: "producer:lean" });
+        state = r.state;
+      }
+      world = { state, agents, lastNonce: null };
+      renderCells(); renderChain(); fillSelects();
+      log("ok", "world seeded", `3 cells, each faucet-minted 1000 ∅.\nissuer well holds ${state.cells[ISSUER_WELL].balances.GRAIN} (Σ = 0).`);
+    }
+
+    function fillSelects() {
+      const opts = Object.keys(world.agents).map(n => `<option value="${world.agents[n].cell}">${world.agents[n].cell}</option>`).join("");
+      $("from").innerHTML = opts; $("to").innerHTML = opts; $("to").selectedIndex = 1;
+    }
+    function renderCells() {
+      const wrap = $("cells"); wrap.innerHTML = "";
+      for (const name of ["alice", "bob", "carol"]) {
+        const c = world.state.cells[`cell:${name}`];
+        const el = document.createElement("div"); el.className = "cell";
+        el.innerHTML = `<div class="cell__id">cell:${name}</div><div class="cell__bal">${c.balances.GRAIN ?? 0} <span style="font-size:.55em;color:var(--muted)">∅</span></div><div class="cell__meta">owner ${world.agents[name].pub.slice(0,16)}… · solvent</div>`;
+        wrap.appendChild(el);
+      }
+      const well = world.state.cells[ISSUER_WELL];
+      const w = document.createElement("div"); w.className = "cell"; w.style.borderLeftColor = "var(--amber)";
+      w.innerHTML = `<div class="cell__id" style="color:var(--amber)">${ISSUER_WELL}</div><div class="cell__bal">${well.balances.GRAIN ?? 0} <span style="font-size:.55em;color:var(--muted)">∅</span></div><div class="cell__meta">the mint sink — goes negative so Σ stays zero</div>`;
+      wrap.appendChild(w);
+    }
+    function renderChain() {
+      const rs = world.state.receipts.slice(-8).reverse();
+      $("chain").innerHTML = rs.map(r => `<div class="receipt"><span>#${r.seq}</span><span class="receipt__q">${r.q.slice(0,12)}…</span><span style="color:var(--faint)">${r.actor.startsWith("producer")?"faucet":"turn"}</span></div>`).join("");
+    }
+    function log(kind, head, body) {
+      const el = document.createElement("div");
+      el.className = "ev ev--" + (kind === "ok" ? "ok" : kind === "reject" ? "reject" : "");
+      el.innerHTML = `<div class="ev__head">${head}</div>${body ? `<div class="ev__body">${body}</div>` : ""}`;
+      $("log").prepend(el);
+    }
+    function fault() { return document.querySelector('input[name=fault]:checked').value; }
+
+    async function run() {
+      const f = fault(); const from = $("from").value, to = $("to").value;
+      let amount = parseInt($("amount").value, 10) || 0;
+      const actor = world.agents[from.split(":")[1]];
+      if (!actor) { log("reject", "no such actor", from); return; }
+
+      let cap;
+      if (f === "capped") {
+        const base = await issue(actor.secret, { cell: actor.cell, rights: ["transfer","write"], holder: actor.pub });
+        cap = await attenuate(base, { rights: ["transfer"], caveat: { type: "max_amount", limit: 100 } });
+      } else if (f === "forge") {
+        cap = await issue(await randomHex(32), { cell: actor.cell, rights: ["transfer"], holder: world.agents.bob.pub });
+      } else {
+        cap = await issue(actor.secret, { cell: actor.cell, rights: ["transfer","write"], holder: actor.pub });
+      }
+      if (f === "overdraft") amount = (world.state.cells[from].balances.GRAIN || 0) + 5000;
+      if (f === "capped" && amount <= 100) amount = 250;
+
+      const signer = (f === "forge") ? world.agents.bob : actor;
+      const nonce = (f === "replay" && world.lastNonce) ? world.lastNonce : await randomHex();
+      let turn = await signTurn({ actorPub: signer.pub, actorPriv: signer.priv, nonce,
+        actions: [{ verb: "transfer", asset: "GRAIN", amount, from, to, cap }] });
+      if (f === "tamper") { turn = JSON.parse(JSON.stringify(turn)); turn.actions[0].amount = amount + 777; }
+
+      log("", `▸ executing turn`, `${signer.name} signs: transfer ${amount} ∅ ${from} → ${to}\nnonce ${nonce.slice(0,16)}…  ·  fault: ${f}`);
+
+      const r = await applyTurn(world.state, turn);
+      if (r.ok) {
+        world.state = r.state; world.lastNonce = nonce; renderCells(); renderChain();
+        log("ok", `✓ COMMITTED — receipt #${r.receipt.seq}`, `q = ${r.receipt.q}\nstateRoot = ${r.receipt.stateRoot.slice(0,32)}…\nprevHash  = ${(r.receipt.prevHash||"∅").slice(0,32)}…`);
+        const v = await verifyHistory(world.state.receipts);
+        log(v.ok ? "ok" : "reject", v.ok ? "✓ light client re-verified the whole chain" : "✗ chain broke", `checked ${v.receipts.length} receipts, head ${(v.head||"").slice(0,12)}… — re-executing nothing`);
+      } else {
+        log("reject", `✗ REFUSED — the kernel said no`, r.reason + `\n\nstate is untouched. all-or-nothing: a rejected turn changes exactly nothing.`);
+      }
+    }
+
+    $("run").addEventListener("click", () => run().catch(e => log("reject", "error", String(e))));
+    $("reset").addEventListener("click", () => { $("log").innerHTML = ""; boot(); });
+    boot();
+  </script>
+  <script type="module" src="/assets/fx.js"></script>
+</body>
+</html>

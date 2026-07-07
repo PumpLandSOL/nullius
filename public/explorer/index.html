@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Explorer — scrub the chain · NULLIUS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0b'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%2300ff9c' font-family='monospace'%3E%E2%88%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    .ex{max-width:1120px;margin:0 auto;padding:var(--s6) var(--s5) var(--s9)}
+    .panel{background:var(--ink-2);border:1px solid var(--line);border-radius:var(--r3);padding:var(--s5);margin-bottom:var(--s4)}
+    .panel h3{font-family:var(--mono);font-size:.82rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:var(--s4);display:flex;justify-content:space-between;align-items:center;gap:var(--s3)}
+    .scrubwrap{display:flex;align-items:center;gap:var(--s4)}
+    input[type=range]{flex:1;accent-color:var(--signal);height:3px}
+    .headline{font-family:var(--mono);font-size:.78rem;color:var(--dim)}
+    .receipts{display:flex;flex-direction:column;gap:3px;margin-top:var(--s4)}
+    .r{display:grid;grid-template-columns:44px 1fr auto;gap:var(--s3);align-items:center;padding:var(--s3) var(--s4);border:1px solid var(--line-2);border-radius:var(--r2);background:var(--void);font-family:var(--mono);font-size:.74rem;transition:opacity .15s,border-color .15s;cursor:pointer}
+    .r--future{opacity:.26}
+    .r--current{border-color:var(--signal-line);background:var(--signal-soft)}
+    .r__seq{color:var(--muted)}
+    .r__q{color:var(--signal);word-break:break-all}
+    .r__sub{color:var(--faint);font-size:.66rem}
+    .cellpick{display:flex;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s4)}
+    .cellpick button{font-family:var(--mono);font-size:.76rem;background:var(--void);border:1px solid var(--line-2);color:var(--dim);border-radius:var(--r2);padding:6px 12px;cursor:pointer}
+    .cellpick button.active{border-color:var(--signal-line);color:var(--signal);background:var(--signal-soft)}
+    .kv{font-family:var(--mono);font-size:.8rem;color:var(--dim);line-height:1.85;word-break:break-all;white-space:pre-wrap}
+    .kv b{color:var(--phosphor)}
+    .hint{color:var(--dim);font-size:.9rem;font-family:var(--sans);margin-bottom:var(--s5);line-height:1.7;max-width:74ch}
+    .toolbar{display:flex;gap:var(--s3);align-items:center;margin-bottom:var(--s5);flex-wrap:wrap}
+  </style>
+</head>
+<body>
+  <canvas id="hexbg"></canvas>
+  <nav class="nav">
+    <a href="/" class="nav__brand"><span class="nav__mark">∅</span><span class="nav__name">NULLIUS</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="/surface.html">Surface</a>
+      <a class="nav__link" href="/verify.html">Verify</a>
+      <a class="nav__link" href="/docs.html">Docs</a>
+      <a class="nav__link" href="/playground/">Playground</a>
+      <a class="nav__link nav__link--active" href="/explorer/">Explorer</a>
+    </div>
+  </nav>
+
+  <div class="ex">
+    <span class="section__label">The explorer</span>
+    <h1 style="margin-bottom:var(--s4)">Scrub the history</h1>
+    <p class="hint">
+      Reading the live node's receipt chain. Time travel is just reading receipts backward — the receipts
+      <em>are</em> the history. Every verification badge is computed in your browser by the light client
+      (<code>verifyHistory()</code>), never sent down pre-decided:
+      <span id="node" class="chip"><span class="chip__dot"></span>connecting…</span>
+    </p>
+
+    <div class="toolbar">
+      <button class="btn" id="faucet">Faucet a random cell (+1 receipt)</button>
+      <button class="btn" id="refresh">Refresh chain</button>
+      <button class="btn" id="tamper">Simulate a pale ghost</button>
+    </div>
+
+    <div class="panel">
+      <h3>Time cursor</h3>
+      <div class="scrubwrap">
+        <span class="headline">genesis</span>
+        <input type="range" id="scrub" min="0" max="0" value="0">
+        <span class="headline">head</span>
+      </div>
+      <p class="headline" id="cursorLine" style="margin-top:var(--s3)"></p>
+    </div>
+
+    <div class="panel">
+      <h3>Inspect a cell at the cursor</h3>
+      <div class="cellpick" id="cellpick"></div>
+      <div class="kv" id="cellview">pick a cell…</div>
+    </div>
+
+    <div class="panel">
+      <h3>Receipt chain <span class="chip chip--ok" id="chainVerdict">—</span></h3>
+      <div class="receipts" id="receipts"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { verifyHistory } from "/kernel/executor.js";
+    import { randomHex } from "/kernel/crypto.js";
+
+    const $ = (id) => document.getElementById(id);
+    let chain = [], verdicts = [], cursor = 0, selectedCell = null, agents = {};
+
+    async function loadStatus() {
+      try {
+        const s = await (await fetch("/status")).json();
+        $("node").innerHTML = `<span class="chip__dot"></span>${s.status} · producer <b style="color:var(--signal)">${s.state_producer}</b> · ${s.receipts} receipts`;
+        $("node").className = "chip chip--ok";
+      } catch { $("node").innerHTML = "node offline"; $("node").className = "chip chip--no"; }
+    }
+    async function loadChain() {
+      const h = await (await fetch("/api/history")).json();
+      chain = h.receipts;
+      const v = await verifyHistory(chain); verdicts = v.receipts;
+      $("chainVerdict").textContent = v.ok ? "chain verified" : "chain broken";
+      $("chainVerdict").className = "chip " + (v.ok ? "chip--ok" : "chip--no");
+      $("scrub").max = String(chain.length); cursor = chain.length; $("scrub").value = String(cursor);
+      try { agents = await (await fetch("/api/agents")).json(); } catch { agents = {}; }
+      renderCellPicks(); render();
+    }
+    function renderCellPicks() {
+      const wrap = $("cellpick"); const names = Object.keys(agents);
+      wrap.innerHTML = names.map(n => `<button data-cell="${agents[n].cell}">${agents[n].cell}</button>`).join("") || `<span class="hint">no named cells</span>`;
+      wrap.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+        selectedCell = b.dataset.cell;
+        wrap.querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
+        renderCellView();
+      }));
+      if (!selectedCell && names.length) { selectedCell = agents[names[0]].cell; wrap.querySelector("button").classList.add("active"); }
+    }
+    async function renderCellView() {
+      if (!selectedCell) return;
+      let cur; try { cur = await (await fetch("/api/cell/" + encodeURIComponent(selectedCell))).json(); } catch { $("cellview").textContent = "cell fetch failed"; return; }
+      const inScope = chain.slice(0, cursor);
+      $("cellview").innerHTML = `<b>${cur.id}</b>\nbalance: <b>${(cur.balances && cur.balances.GRAIN) ?? 0} ∅</b>\nowner: ${cur.owner ? cur.owner.slice(0,24)+"…" : "bearer"}\npredicate: ${cur.predicate ? cur.predicate.kind : "?"}\nreceipts in scope at cursor: ${inScope.length} of ${chain.length}`;
+    }
+    function render() {
+      const list = $("receipts"); list.innerHTML = "";
+      chain.forEach((r, i) => {
+        const v = verdicts[i] || { verified: false };
+        const el = document.createElement("div");
+        el.className = "r" + ((i + 1) > cursor ? " r--future" : "") + ((i + 1) === cursor ? " r--current" : "");
+        el.innerHTML = `<div class="r__seq">#${r.seq}</div><div><div class="r__q">${r.q.slice(0,28)}…</div><div class="r__sub">${r.actor.startsWith("producer")?"faucet mint":"signed turn"} · prev ${(r.prevHash||"∅").slice(0,10)}… · root ${r.stateRoot.slice(0,10)}…</div></div><div class="chip ${v.verified?"chip--ok":"chip--no"}">${v.verified?"verified":"TAMPERED"}</div>`;
+        el.addEventListener("click", () => { cursor = i + 1; $("scrub").value = String(cursor); updateCursor(); });
+        list.appendChild(el);
+      });
+      updateCursor();
+    }
+    function updateCursor() {
+      const at = cursor === 0 ? "genesis (before any receipt)" : cursor === chain.length ? `head — after receipt #${chain[chain.length-1]?.seq ?? 0}` : `after receipt #${chain[cursor-1]?.seq}`;
+      const head = cursor === 0 ? "∅" : chain[cursor-1].q;
+      $("cursorLine").innerHTML = `cursor at <b style="color:var(--phosphor)">${at}</b> · head ${head.slice(0,16)}${head!=="∅"?"…":""}`;
+      $("receipts").querySelectorAll(".r").forEach((el, i) => {
+        el.classList.toggle("r--future", (i + 1) > cursor);
+        el.classList.toggle("r--current", (i + 1) === cursor);
+      });
+      renderCellView();
+    }
+    $("scrub").addEventListener("input", () => { cursor = parseInt($("scrub").value, 10); updateCursor(); });
+    $("refresh").addEventListener("click", () => loadChain());
+    $("faucet").addEventListener("click", async () => {
+      const cell = "cell:" + (await randomHex(4));
+      await fetch("/api/faucet", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ recipient: cell, amount: 250 }) });
+      await loadChain();
+    });
+    $("tamper").addEventListener("click", async () => {
+      const h = await (await fetch("/api/history")).json();
+      chain = h.receipts.map(x => ({ ...x }));
+      if (chain.length > 1) chain[1] = { ...chain[1], stateRoot: "deadbeef".repeat(8) };
+      const v = await verifyHistory(chain); verdicts = v.receipts;
+      $("chainVerdict").textContent = v.ok ? "chain verified" : "chain broken — ghost caught";
+      $("chainVerdict").className = "chip " + (v.ok ? "chip--ok" : "chip--no");
+      $("scrub").max = String(chain.length); cursor = chain.length; $("scrub").value = String(cursor); render();
+    });
+
+    await loadStatus(); await loadChain();
+  </script>
+  <script type="module" src="/assets/fx.js"></script>
+</body>
+</html>

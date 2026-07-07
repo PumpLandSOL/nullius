@@ -1,0 +1,6 @@
+node_modules/
+_studio/tmp/
+*.log
+.DS_Store
+data.json
+.env

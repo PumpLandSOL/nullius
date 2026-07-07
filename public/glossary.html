@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Glossary · NULLIUS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0b'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%2300ff9c' font-family='monospace'%3E%E2%88%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <canvas id="hexbg"></canvas>
+  <nav class="nav">
+    <a href="/" class="nav__brand"><span class="nav__mark">∅</span><span class="nav__name">NULLIUS</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="/surface.html">Surface</a>
+      <a class="nav__link" href="/substrate.html">Substrate</a>
+      <a class="nav__link" href="/verify.html">Verify</a>
+      <a class="nav__link" href="/docs.html">Docs</a>
+      <a class="nav__link" href="/explorer/">Explorer</a>
+      <a class="nav__link nav__cta" href="/playground/">Playground</a>
+    </div>
+  </nav>
+
+  <main class="wrap wrap--narrow">
+    <div class="phead">
+      <span class="section__label">Reference</span>
+      <h1>Glossary</h1>
+      <p>The nouns, defined once. Each links back to where it does work.</p>
+    </div>
+
+    <div class="grid" style="margin-top:var(--s6)">
+      <div class="card card--accent" id="cell"><span class="card__k">cell</span><div class="card__h">Where state lives, behind its own rules</div><p class="card__p">A container holding balances, capability slots, and named slots, plus a <em>predicate</em> — a program over its own transitions the substrate enforces on every change. Nothing is ownerless; a turn touching one cell leaves every other cell untouched.</p></div>
+      <div class="card card--accent" id="turn"><span class="card__k">turn</span><div class="card__h">The only way state changes</div><p class="card__p">An atomic batch of actions, ed25519-signed by its actor. Each action presents a capability and must discharge every guard in scope. The whole turn commits or none of it does.</p></div>
+      <div class="card card--accent" id="capability"><span class="card__k">capability</span><div class="card__h">Authority you show, not claim</div><p class="card__p">An unforgeable token naming an authority over one cell — a set of rights plus a chain of restricting caveats, bound by an HMAC tag rooted in the cell's secret. Attenuable but never amplifiable. Lineage: macaroons → biscuit → the proof system.</p></div>
+      <div class="card card--accent" id="guard"><span class="card__k">guard</span><div class="card__h">A condition a turn must discharge</div><p class="card__p">The authority guard checks <code>required ⊆ held</code>. The predicate guard checks the target cell's program accepts the transition. An undischarged guard voids the turn.</p></div>
+      <div class="card card--accent" id="receipt"><span class="card__k">receipt</span><div class="card__h">History you can hand to a stranger</div><p class="card__p">The tamper-evident record a committed turn leaves. It binds the whole post-state via a domain-tagged commitment and pins its parent by hash. Receipts chain; the chain is the history.</p></div>
+      <div class="card card--accent" id="q"><span class="card__k">Q</span><div class="card__h">The receipt's binding commitment</div><p class="card__p">The hash a committed turn emits: <code>q = commit(receiptBody)</code>. It opens to exactly one post-state; a second pre-image would be the only way to forge a receipt for a different state — exactly the collision-resistance assumption.</p></div>
+      <div class="card card--accent" id="pale-ghost"><span class="card__k">the pale ghost</span><div class="card__h">The foil the proofs defeat</div><p class="card__p">A server that presents a plausible state it never legitimately produced. The light client catches it: there is no verifying chain for a forged history. Summon one in the <a href="/explorer/">explorer</a>.</p></div>
+      <div class="card card--accent" id="nullifier"><span class="card__k">nullifier</span><div class="card__h">Why a spend can't replay</div><p class="card__p">A turn's nonce, marked spent in the actor's set once it commits. Presenting it again is a double-spend and is refused for freshness. The project's namesake primitive.</p></div>
+      <div class="card card--accent" id="sturdyref"><span class="card__k">sturdyref</span><div class="card__h">A capability you persist and rehydrate</div><p class="card__p">A durable, re-attachable reference behind a membrane. It is what a snapshot embeds so a screenshot can re-open as a per-viewer, attenuated live surface.</p></div>
+    </div>
+  </main>
+
+  <footer class="foot"><div class="foot__inner">
+    <div class="foot__top">
+      <div><div class="foot__brand"><span>∅</span> NULLIUS</div><p class="foot__tag">take nobody's word for it.</p></div>
+      <div class="foot__links"><a href="/">Home</a><a href="/docs.html">Docs</a><a href="/verify.html">Verify</a><a href="/playground/">Playground</a><a href="/explorer/">Explorer</a><a href="/paper.html">Paper</a></div>
+    </div>
+    <p class="foot__legal">∅ NULLIUS — verified object-capability substrate. AGPL-3.0-or-later.</p>
+  </div></footer>
+  <script type="module" src="/assets/fx.js"></script>
+</body>
+</html>

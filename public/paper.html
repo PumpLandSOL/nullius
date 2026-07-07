@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paper — NULLIUS: a verified object-capability substrate</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0b'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='%2300ff9c' font-family='monospace'%3E%E2%88%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <canvas id="hexbg"></canvas>
+  <nav class="nav">
+    <a href="/" class="nav__brand"><span class="nav__mark">∅</span><span class="nav__name">NULLIUS</span></a>
+    <div class="nav__links">
+      <a class="nav__link" href="/surface.html">Surface</a>
+      <a class="nav__link" href="/substrate.html">Substrate</a>
+      <a class="nav__link" href="/verify.html">Verify</a>
+      <a class="nav__link" href="/docs.html">Docs</a>
+      <a class="nav__link" href="/explorer/">Explorer</a>
+      <a class="nav__link nav__cta" href="/playground/">Playground</a>
+    </div>
+  </nav>
+
+  <main class="wrap wrap--narrow">
+    <div class="phead">
+      <span class="section__label">Whitepaper · draft</span>
+      <h1>NULLIUS: a verified<br>object-capability substrate</h1>
+      <p>A window is a capability. This note sketches the substrate that makes the claim mean something, and points at the running code that demonstrates it.</p>
+    </div>
+
+    <p class="section__intro" style="margin-top:var(--s6)">We present NULLIUS, an object-capability kernel whose entire semantics reduce to three objects — cells, turns, receipts — and whose every state change is an atomic, capability-gated, signed turn leaving a hash-chained receipt. Authority is unforgeable and attenuable but never amplifiable (a macaroon/biscuit tag chain); value is conserved by construction (mints are issuer moves); integrity is a domain-tagged commitment binding the whole post-state; freshness is a per-actor nullifier set; and a light client verifies an entire history by re-checking the receipt chain, re-executing nothing and trusting no executor. In a full deployment the executor is machine-checked in Lean, emits STARK circuits, and boots as a protection domain on the seL4 microkernel. This implementation reproduces the kernel and its light client as one executor that runs identically in a node and in the browser, and marks the formal-verification and microkernel layers as represented.</p>
+
+    <a class="btn btn--primary" href="/docs.html" style="margin:var(--s5) 0">▶ Read the seven-rung walkthrough</a>
+
+    <div class="grid grid-2 mt6">
+      <div class="card"><span class="card__k">§1</span><div class="card__h">The inversion</div><p class="card__p">Ambient authority vs. capabilities. Why "a window is a session" is the bug and "a window is a capability" is the fix.</p></div>
+      <div class="card"><span class="card__k">§2</span><div class="card__h">Cells and predicates</div><p class="card__p">State behind its own program. Solvent cells, budget cells, and the enforced transition relation.</p></div>
+      <div class="card"><span class="card__k">§3</span><div class="card__h">Turns and atomicity</div><p class="card__p">All-or-nothing commit; the signed body; per-leg guard discharge; the void-on-any-failure rule.</p></div>
+      <div class="card"><span class="card__k">§4</span><div class="card__h">Capabilities</div><p class="card__p">The HMAC tag chain; attenuation as restricting caveats; effective rights = root ∩ caveats.</p></div>
+      <div class="card"><span class="card__k">§5</span><div class="card__h">Receipts &amp; the light client</div><p class="card__p">Domain-tagged commitments, prevHash pinning, monotone sequence, unfoolability against the pale ghost.</p></div>
+      <div class="card"><span class="card__k">§6</span><div class="card__h">Local to global</div><p class="card__p">One capability across a distance parameter; the n=1 collapse to strong-local; the substrate on seL4.</p></div>
+    </div>
+
+    <h2 style="font-family:var(--mono);margin:var(--s7) 0 var(--s4)">Lineage</h2>
+    <div class="grid">
+      <div class="card__p" style="border-bottom:1px solid var(--line);padding-bottom:var(--s3)"><strong>Mark S. Miller.</strong> <em>Robust Composition.</em> The object-capability model.</div>
+      <div class="card__p" style="border-bottom:1px solid var(--line);padding-bottom:var(--s3)"><strong>Birgisson et al.</strong> <em>Macaroons: Cookies with Contextual Caveats.</em> The attenuable bearer token capabilities descend from.</div>
+      <div class="card__p" style="border-bottom:1px solid var(--line);padding-bottom:var(--s3)"><strong>biscuit-auth.</strong> <em>Biscuit.</em> Datalog-caveated capability tokens generalising macaroons.</div>
+      <div class="card__p" style="border-bottom:1px solid var(--line);padding-bottom:var(--s3)"><strong>Klein et al.</strong> <em>seL4: Formal Verification of an OS Kernel.</em> The verified microkernel the substrate boots on.</div>
+      <div class="card__p"><strong>Ben-Sasson et al.</strong> <em>Scalable, transparent (STARK) arguments.</em> The recursion the light client's unfoolability rests on.</div>
+    </div>
+
+    <div class="callout callout--note" style="margin-top:var(--s7)">NULLIUS is a working object-capability substrate. The running kernel is original code; the design and assurance framing draw on the lineage above. AGPL-3.0-or-later.</div>
+  </main>
+
+  <footer class="foot"><div class="foot__inner">
+    <div class="foot__top">
+      <div><div class="foot__brand"><span>∅</span> NULLIUS</div><p class="foot__tag">take nobody's word for it.</p></div>
+      <div class="foot__links"><a href="/">Home</a><a href="/docs.html">Docs</a><a href="/verify.html">Verify</a><a href="/playground/">Playground</a><a href="/explorer/">Explorer</a><a href="/glossary.html">Glossary</a></div>
+    </div>
+    <p class="foot__legal">∅ NULLIUS — verified object-capability substrate. AGPL-3.0-or-later.</p>
+  </div></footer>
+  <script type="module" src="/assets/fx.js"></script>
+</body>
+</html>
