@@ -277,9 +277,17 @@ pre code{background:none;border:none;padding:0;color:inherit;font-size:inherit}
 .reveal.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
 
+/* Keep the social buttons (GitHub + X) and the Playground CTA visible on
+   small screens by dropping the secondary text links instead of letting the
+   nav overflow and clip the right-hand icons off-screen. */
+@media (width<=820px){
+  .nav__link:not(.nav__cta):not(.nav__x){display:none}
+  .nav__links{gap:var(--s2)}
+}
 @media (width<=560px){
-  .nav__links{gap:0}
-  .nav__link{padding:6px 8px;font-size:.66rem}
+  .nav{padding:var(--s3) var(--s4)}
+  .nav__links{gap:6px}
   .nav__name{display:none}
+  .nav__cta{padding:7px 12px}
   .hero{padding:var(--s7) 0 var(--s6)}
 }
