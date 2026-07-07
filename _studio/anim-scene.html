@@ -1,0 +1,167 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+:root{
+  --void:#050506; --ink:#0a0a0b; --phos:#e9f2f7; --dim:#9aa4ae; --mut:#5b636d;
+  --sig:#00ff9c; --sig2:#4dffbf; --deny:#ff3b52;
+  --mono:"Cascadia Code","Cascadia Mono","Consolas",ui-monospace,monospace;
+  --sans:"Segoe UI",system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1280px;height:720px;overflow:hidden;background:var(--ink);color:var(--phos);font-family:var(--sans)}
+#stage{position:relative;width:1280px;height:720px;overflow:hidden}
+#hex{position:absolute;inset:0;z-index:0;opacity:.4}
+.glow{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% -10%,rgba(0,255,156,.10),transparent 60%),
+             radial-gradient(140% 130% at 50% 50%,transparent 52%,rgba(0,0,0,.62) 100%)}
+.scan{position:absolute;inset:0;z-index:40;pointer-events:none;mix-blend-mode:multiply;opacity:.28;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.30) 2px 3px)}
+.scene{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;will-change:opacity,transform}
+.mono{font-family:var(--mono)}
+.sig{color:var(--sig)}
+#s1 .wm{font-family:var(--mono);font-size:96px;font-weight:700;letter-spacing:.14em;color:var(--phos);height:110px}
+#s1 .tag{font-family:var(--mono);font-size:28px;color:var(--sig);letter-spacing:.05em;margin-top:22px;text-shadow:0 0 22px rgba(0,255,156,.4)}
+.markwrap{position:relative;width:200px;height:200px;margin-bottom:30px}
+.term{width:760px;background:var(--void);border:1px solid rgba(233,242,247,.12);border-radius:12px;font-family:var(--mono);overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.6)}
+.term .bar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid rgba(233,242,247,.12);color:var(--mut);font-size:14px;letter-spacing:.1em}
+.tdot{width:10px;height:10px;border-radius:50%;background:var(--sig);box-shadow:0 0 10px var(--sig)}
+.term .body{padding:22px 24px;font-size:20px;line-height:2.05;min-height:300px}
+.ok{color:var(--sig)} .no{color:var(--deny)} .c{color:var(--mut)} .p{color:var(--sig)} .v{color:var(--phos)}
+.cur{color:var(--sig)}
+#s3 .head{font-family:var(--mono);font-size:96px;font-weight:700;text-transform:uppercase;letter-spacing:-.01em;line-height:1.05;text-align:center}
+#s3 .head .g{color:var(--sig);text-shadow:0 0 44px rgba(0,255,156,.55)}
+#s4 .ec-word{font-family:var(--mono);font-size:80px;font-weight:700;letter-spacing:.16em}
+#s4 .ec-line{font-family:var(--mono);font-size:26px;color:var(--sig);letter-spacing:.06em;margin-top:20px}
+#s4 .ec-url{font-family:var(--mono);font-size:22px;color:var(--dim);letter-spacing:.14em;margin-top:14px}
+.stamp{position:absolute;top:70px;right:88px;transform:rotate(-11deg);font-family:var(--mono);font-weight:700;letter-spacing:.08em;
+  color:var(--sig);border:3px solid var(--sig);border-radius:6px;padding:10px 20px;font-size:26px;text-transform:uppercase;
+  box-shadow:0 0 30px rgba(0,255,156,.3),inset 0 0 26px rgba(0,255,156,.08);text-shadow:0 0 15px rgba(0,255,156,.5)}
+.stamp small{display:block;font-size:.46em;letter-spacing:.22em;color:var(--sig2);text-align:center}
+</style></head>
+<body>
+<div id="stage">
+  <canvas id="hex" width="1280" height="720"></canvas>
+  <div class="glow"></div>
+
+  <div class="scene" id="s1">
+    <div class="markwrap">
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        <circle id="ring" cx="100" cy="104" r="66" fill="none" stroke="#00ff9c" stroke-width="14" stroke-linecap="round"/>
+        <line id="slash" x1="46" y1="158" x2="154" y2="50" stroke="#00ff9c" stroke-width="14" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="wm mono" id="wm"></div>
+    <div class="tag" id="tag">take nobody's word for it.</div>
+  </div>
+
+  <div class="scene" id="s2">
+    <div class="term">
+      <div class="bar"><span class="tdot"></span> nullius@devnet · light-client</div>
+      <div class="body" id="tbody"></div>
+    </div>
+  </div>
+
+  <div class="scene" id="s3">
+    <div class="head">A WINDOW <span class="g">IS</span><br>A CAPABILITY</div>
+  </div>
+
+  <div class="scene" id="s4">
+    <div class="stamp">Unfoolable<small>light-client verified</small></div>
+    <div style="display:flex;align-items:center;gap:24px">
+      <svg width="96" height="96" viewBox="0 0 200 200"><circle cx="100" cy="104" r="60" fill="none" stroke="#00ff9c" stroke-width="16" stroke-linecap="round"/><line x1="52" y1="152" x2="148" y2="56" stroke="#00ff9c" stroke-width="16" stroke-linecap="round"/></svg>
+      <div class="ec-word">NULLIUS</div>
+    </div>
+    <div class="ec-line">$NULL · a light client cannot be fooled</div>
+    <div class="ec-url">nulliussol.xyz · @NullOnSOL</div>
+  </div>
+
+  <div class="scan"></div>
+</div>
+
+<script>
+const W=1280,H=720,FS=16,HEX="0123456789abcdef";
+const hx=document.getElementById("hex").getContext("2d");
+hx.font=FS+'px "Cascadia Code",Consolas,monospace';
+const NCOL=Math.floor(W/(FS*1.25));
+const colSpeed=Array.from({length:NCOL},()=>0.5+Math.random()*1.1);
+const colStart=Array.from({length:NCOL},()=>Math.random()*H);
+const colLen=Array.from({length:NCOL},()=>6+((Math.random()*22)|0));
+
+function drawHex(f){
+  hx.clearRect(0,0,W,H);
+  for(let i=0;i<NCOL;i++){
+    const x=i*FS*1.25+3, head=(colStart[i]+f*colSpeed[i]*FS*0.5);
+    for(let j=0;j<colLen[i];j++){
+      const yy=((head-j*FS)%H+H)%H;
+      const isHead=j===0;
+      const a=isHead?0.5:Math.max(0,0.18-j*0.012);
+      hx.fillStyle=isHead?'rgba(0,255,156,'+a+')':'rgba(120,175,160,'+a+')';
+      hx.fillText(HEX[(Math.random()*16)|0],x,yy);
+    }
+  }
+}
+
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const ramp=(f,a,b)=>clamp((f-a)/(b-a),0,1);
+// visibility: fade in a..b, hold, fade out c..d
+function vis(f,a,b,c,d){ if(f<a)return 0; if(f<b)return ease(ramp(f,a,b)); if(f<c)return 1; if(f<d)return 1-ease(ramp(f,c,d)); return 0; }
+
+const RING_LEN=2*Math.PI*66, SLASH_LEN=Math.hypot(154-46,50-158);
+const WORD="NULLIUS", GL="!<>-_\\/[]=+*?#01ABCDEF∅";
+const TLINES=[
+  {t:"> transfer 250 ∅  alice → bob", s:112, e:132, cls:"p"},
+  {t:"✓ COMMITTED   #204  root a2f0c7…", s:134, e:143, cls:"ok", whole:1},
+  {t:"> replay #204", s:150, e:162, cls:"p"},
+  {t:"✗ REFUSED   freshness: nonce already spent", s:164, e:173, cls:"no", whole:1},
+  {t:"> verify(chain)   // re-executing nothing", s:180, e:196, cls:"p"},
+  {t:"✓ UNFOOLABLE   204 receipts · trusts no one", s:198, e:207, cls:"ok", whole:1},
+];
+
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+function render(f){
+  drawHex(f);
+
+  // Scene 1 — mark + wordmark + tagline
+  const v1=vis(f,6,26,86,102);
+  const s1=document.getElementById("s1"); s1.style.opacity=v1; s1.style.transform=`scale(${0.98+0.02*v1})`;
+  const dp=ramp(f,8,42);
+  document.getElementById("ring").setAttribute("stroke-dasharray",RING_LEN);
+  document.getElementById("ring").setAttribute("stroke-dashoffset",RING_LEN*(1-dp));
+  document.getElementById("slash").setAttribute("stroke-dasharray",SLASH_LEN);
+  document.getElementById("slash").setAttribute("stroke-dashoffset",SLASH_LEN*(1-clamp((dp-0.5)*2,0,1)));
+  const wp=ramp(f,24,50), nres=Math.floor(wp*WORD.length);
+  let wm=""; for(let i=0;i<WORD.length;i++){ wm += i<nres?WORD[i] : (f>22? `<span class="c">${GL[(Math.random()*GL.length)|0]}</span>`:""); }
+  document.getElementById("wm").innerHTML=wm;
+  document.getElementById("tag").style.opacity=ramp(f,42,62);
+
+  // Scene 2 — terminal typing
+  const v2=vis(f,96,110,196,208);
+  const s2=document.getElementById("s2"); s2.style.opacity=v2; s2.style.transform=`translateY(${(1-v2)*18}px)`;
+  let html="";
+  for(const ln of TLINES){
+    if(f<ln.s) continue;
+    let shown;
+    if(ln.whole) shown=ln.t;
+    else { const n=Math.round(ramp(f,ln.s,ln.e)*ln.t.length); shown=ln.t.slice(0,n); }
+    const typing=!ln.whole && f<ln.e;
+    html+=`<div class="${ln.cls}">${esc(shown)}${typing?'<span class="cur">▋</span>':''}</div>`;
+  }
+  document.getElementById("tbody").innerHTML=html;
+
+  // Scene 3 — headline
+  const v3=vis(f,202,224,252,264);
+  const s3=document.getElementById("s3"); s3.style.opacity=v3;
+  s3.querySelector(".head").style.transform=`translateY(${(1-ease(ramp(f,202,226)))*40}px)`;
+
+  // Scene 4 — end card
+  const v4=vis(f,262,284,999,1000);
+  const s4=document.getElementById("s4"); s4.style.opacity=v4; s4.style.transform=`scale(${0.98+0.02*v4})`;
+  const st=s4.querySelector(".stamp"); const sp=ease(ramp(f,286,306));
+  st.style.opacity=sp; st.style.transform=`rotate(${-11}deg) scale(${0.8+0.2*sp})`;
+}
+window.setFrame=(f)=>render(f);
+window.TOTAL=330;
+render(0);
+</script>
+</body></html>

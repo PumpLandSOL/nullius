@@ -99,6 +99,9 @@ pre code{background:none;border:none;padding:0;color:inherit;font-size:inherit}
 .nav__link--active{color:var(--signal);border-color:var(--signal-line);background:var(--signal-soft)}
 .nav__cta{color:var(--void)!important;background:var(--signal);border-color:var(--signal)!important;font-weight:600}
 .nav__cta:hover{background:var(--signal-2)}
+.nav__x{display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid var(--line-3);border-radius:var(--r2);color:var(--phosphor)}
+.nav__x:hover{color:var(--signal);border-color:var(--signal-line);background:var(--signal-soft)}
+.nav__x svg{width:15px;height:15px}
 
 /* ---- HERO ---- */
 .hero{position:relative;padding:var(--s9) 0 var(--s8);overflow:hidden}
